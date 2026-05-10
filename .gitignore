@@ -1,0 +1,17 @@
+# 環境變數與機密
+.env
+.streamlit/secrets.toml
+
+# Python 快取
+__pycache__/
+*.pyc
+
+# 虛擬環境
+venv/
+env/
+.venv/
+
+# 本地大型資料檔
+*.csv
+*.xlsx
+*.tsv
