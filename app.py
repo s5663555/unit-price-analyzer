@@ -87,6 +87,8 @@ def smart_search(query: str, base_filters: dict, top_k: int = 50):
         query_builder = query_builder.eq('is_spare_price', False)
     if base_filters.get('exclude_outlier'):
         query_builder = query_builder.is_('price_flag', 'null')
+    if base_filters.get('exclude_lot'):
+        query_builder = query_builder.neq('unit', '式')
     
     # 第一層：關鍵字精準比對
     if query:
@@ -124,6 +126,8 @@ def smart_search(query: str, base_filters: dict, top_k: int = 50):
                 data2 = [d for d in data2 if not d.get('is_spare_price')]
             if base_filters.get('exclude_outlier'):
                 data2 = [d for d in data2 if d.get('price_flag') is None]
+            if base_filters.get('exclude_lot'):
+                data2 = [d for d in data2 if d.get('unit') != '式']
                 
             if len(data2) >= 1:
                 return data2, "語意相似度 (pgvector)"
@@ -186,12 +190,14 @@ with st.sidebar:
     
     st.markdown("---")
     st.subheader("基礎排除條件")
-    exclude_spare = st.checkbox("排除備用單價", value=True)
+    exclude_spare = st.checkbox("排除備用單價", value=False)
     exclude_outlier = st.checkbox("排除單價異常值", value=True)
+    exclude_lot = st.checkbox("排除以「式」計價", value=False)
     
     base_filters = {
         'exclude_spare': exclude_spare,
-        'exclude_outlier': exclude_outlier
+        'exclude_outlier': exclude_outlier,
+        'exclude_lot': exclude_lot
     }
 
 # 5. 主內容區與動態檢索
